@@ -1,0 +1,36 @@
+pkgname=agterm-linux-git
+pkgver=0.33.1+linux.1.r68.g74df4076
+pkgrel=1
+pkgdesc='Native terminal with a workspace and session sidebar, built on libghostty'
+arch=(x86_64)
+url='https://github.com/melonamin/agterm-linux'
+license=(MIT)
+depends=(bash glibc gtk4 libadwaita webkitgtk-6.0 libepoxy)
+makedepends=(git swift-language zig imagemagick)
+provides=(agterm-linux)
+conflicts=(agterm-linux)
+options=(!strip !debug)
+source=("git+$url.git#branch=linux-port")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd agterm-linux
+  git describe --long --tags --match 'linux-v*' | sed 's/^linux-v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd agterm-linux
+  scripts/setup-linux.sh
+  (cd agterm-linux && swift build -c release --build-system native)
+  rm -rf "$srcdir/stage"
+  AGTERM_PACKAGE_VERSION="$pkgver" scripts/stage-linux.sh "$srcdir/stage"
+}
+
+package() {
+  install -d "$pkgdir/opt" "$pkgdir/usr/bin" "$pkgdir/usr/share"
+  cp -a "$srcdir/stage" "$pkgdir/opt/agterm-linux"
+  ln -s /opt/agterm-linux/bin/agterm-linux "$pkgdir/usr/bin/agterm-linux"
+  ln -s /opt/agterm-linux/bin/agtermctl "$pkgdir/usr/bin/agtermctl"
+  cp -a "$srcdir/stage/share/applications" "$srcdir/stage/share/icons" "$pkgdir/usr/share/"
+  install -Dm644 agterm-linux/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

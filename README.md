@@ -36,7 +36,7 @@ Code layout:
 - `agtermCore/` is shared Swift code and should remain host-free.
 - `agterm-linux/` is the GTK4/libadwaita application.
 - `linux/` carries Linux-specific patches and support files.
-- `packaging/linux/` carries Linux desktop/Flatpak packaging.
+- `packaging/linux/` carries Linux desktop, Flatpak, and Arch packaging.
 - `scripts/*-linux.sh` are Linux build, run, install, and packaging helpers.
 
 ### Linux feature parity and platform differences
@@ -218,6 +218,13 @@ tar xzf agterm-linux-vX.Y.Z-x86_64.tar.gz
 ./agterm-linux/bin/agterm-linux
 ```
 
+On Arch Linux, install the release tarball repackaged, or build `linux-port` from source, from the AUR:
+
+```sh
+yay -S agterm-linux-bin
+yay -S agterm-linux-git
+```
+
 All artifacts are built for x86_64 on Ubuntu 24.04.
 Each release includes consolidated SHA-256 checksums and GitHub build-provenance attestations.
 
@@ -378,6 +385,17 @@ An existing tag can be rebuilt from the Actions UI or with:
 ```sh
 gh workflow run release-linux.yml --ref linux-port -f tag=linux-v0.33.1
 ```
+
+After the release is published, update `packaging/linux/arch/agterm-linux-bin` and push it to the AUR:
+
+```sh
+cd packaging/linux/arch/agterm-linux-bin
+sed -i 's/^pkgver=.*/pkgver=0.33.1/;s/^pkgrel=.*/pkgrel=1/' PKGBUILD
+updpkgsums && makepkg --printsrcinfo > .SRCINFO
+cp PKGBUILD .SRCINFO /path/to/aur/agterm-linux-bin/
+```
+
+`agterm-linux-git` is pushed the same way only when its PKGBUILD changes.
 
 Verify a downloaded release with either mechanism:
 

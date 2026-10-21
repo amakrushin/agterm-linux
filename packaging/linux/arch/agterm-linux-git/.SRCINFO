@@ -1,0 +1,25 @@
+pkgbase = agterm-linux-git
+	pkgdesc = Native terminal with a workspace and session sidebar, built on libghostty
+	pkgver = 0.33.1+linux.1.r68.g74df4076
+	pkgrel = 1
+	url = https://github.com/melonamin/agterm-linux
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = swift-language
+	makedepends = zig
+	makedepends = imagemagick
+	depends = bash
+	depends = glibc
+	depends = gtk4
+	depends = libadwaita
+	depends = webkitgtk-6.0
+	depends = libepoxy
+	provides = agterm-linux
+	conflicts = agterm-linux
+	options = !strip
+	options = !debug
+	source = git+https://github.com/melonamin/agterm-linux.git#branch=linux-port
+	sha256sums = SKIP
+
+pkgname = agterm-linux-git
